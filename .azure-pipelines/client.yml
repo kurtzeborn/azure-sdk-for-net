@@ -1,6 +1,6 @@
 #Variables: 
-#   ‘source.scope’ list of projects to build (Ex: SDKs\KeyVault\dataPlane) 
-#   ‘system.debug’ bool for debug tracing
+#   ï¿½source.scopeï¿½ list of projects to build (Ex: SDKs\KeyVault\dataPlane) 
+#   ï¿½system.debugï¿½ bool for debug tracing
 
 resources:
 - repo: self
@@ -99,7 +99,7 @@ steps:
          }
      ]
 
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: and(succeeded(), notIn(variables['Build.Reason'], 'PullRequest', 'Manual'))
 
 - task: MSBuild@1
   displayName: 'Build NuGet Packages'
@@ -139,7 +139,7 @@ steps:
          }
      ]
 
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: and(succeeded(), notIn(variables['Build.Reason'], 'PullRequest', 'Manual'))
 
 - script: |
    set _VSWHERE="%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
