@@ -1,6 +1,6 @@
 #Variables: 
-#   �source.scope� list of projects to build (Ex: SDKs\KeyVault\dataPlane) 
-#   �system.debug� bool for debug tracing
+#   'source.scope' list of projects to build (Ex: SDKs\KeyVault\dataPlane) 
+#   'system.debug' bool for debug tracing
 
 resources:
 - repo: self
@@ -31,7 +31,7 @@ steps:
   inputs:
     solution: build.proj
 
-    msbuildArguments: '/t:RunTests /p:Scope=$(source.scope) /p:Configuration=Release /clp:ShowTimestamp /flp:Summary;Verbosity=minimal;LogFile=FullBuild.sum /flp1:warningsonly;logfile=FullBuild.wrn /flp2:errorsonly;logfile=FullBuild.err /p:DebugTrace=$(system.debug) /p:CodeSign=false /p:AuthenticodeSign=false /p:RunGlobalReadinessTools=false /p:EnablePreBuildTarget=false /p:EnablePostBuildTarget=false'
+    msbuildArguments: '/t:Build /p:Scope=$(source.scope) /p:Configuration=Release /clp:ShowTimestamp /flp:Summary;Verbosity=minimal;LogFile=FullBuild.sum /flp1:warningsonly;logfile=FullBuild.wrn /flp2:errorsonly;logfile=FullBuild.err /p:DebugTrace=$(system.debug) /p:CodeSign=false /p:AuthenticodeSign=false /p:RunGlobalReadinessTools=false /p:EnablePreBuildTarget=false /p:EnablePostBuildTarget=false'
 
 
 - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
@@ -41,8 +41,8 @@ steps:
 
     FolderPath: 'src\SDKs'
 
-    #TODO: This could use better filtering as this will include test assemblies as well.
-    Pattern: '*.dll'
+    #TODO: This needs better filtering, haven't figured that out yet.  It will include test assemblies as well.
+    Pattern: '*KeyVault*.dll'
 
     signConfigType: inlineSignParams
 
@@ -99,7 +99,7 @@ steps:
          }
      ]
 
-  condition: and(succeeded(), notIn(variables['Build.Reason'], 'PullRequest', 'Manual'))
+  condition: and(succeeded(), notIn(variables['Build.Reason'], 'PullRequest'))
 
 - task: MSBuild@1
   displayName: 'Build NuGet Packages'
@@ -139,7 +139,7 @@ steps:
          }
      ]
 
-  condition: and(succeeded(), notIn(variables['Build.Reason'], 'PullRequest', 'Manual'))
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
 
 - script: |
    set _VSWHERE="%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
