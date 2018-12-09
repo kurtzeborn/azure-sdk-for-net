@@ -14,7 +14,7 @@ variables:
   system.debug: 'false'
 
 jobs:
-  - job: 'Build And Test'
+  - job: 'Build_and_Test'
   
     pool:
       vmImage: 'vs2017-win2016'
