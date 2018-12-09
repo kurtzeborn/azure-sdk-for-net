@@ -2,14 +2,16 @@ trigger:
 - psSdkJson6
 
 #Variables: 
-#   'source.scope' list of projects to build (Ex: SDKs\KeyVault\dataPlane)
-#   'sign.pattern' the pattern used to find assemblies for SN and AuthentiCode signing
-#   'system.debug' bool for debug tracing
+#  'source.scope' list of projects to build (Ex: SDKs\KeyVault\dataPlane)
+#  'build.useLatest' indicates whether or not to use build bootstrap files from the LTSBuildTools branch
+#  'sign.pattern' the pattern used to find assemblies for SN and AuthentiCode signing
+#  'system.debug' bool for debug tracing
 
 #TODO: sign.pattern needs better filtering (not KeyVault specific, exclude test assemblies).
 
 variables:
   source.scope: 'SDKs\KeyVault\dataPlane'
+  build.useLatest: 'false'
   sign.pattern: '*KeyVault*.dll'
   system.debug: 'false'
 
@@ -34,7 +36,7 @@ jobs:
         inputs:
           solution: build.proj
 
-          msbuildArguments: '/t:Init /flp:LogFile=msbuild.Initlog;Verbosity=normal'
+          msbuildArguments: '/t:Init /flp:LogFile=msbuild.Initlog;Verbosity=normal /p:UseLatest=$(build.useLatest)'
 
 
       - task: MSBuild@1
@@ -42,7 +44,7 @@ jobs:
         inputs:
           solution: build.proj
 
-          msbuildArguments: '/t:Build /p:Scope=$(source.scope) /p:Configuration=Release /clp:ShowTimestamp /flp:Summary;Verbosity=minimal;LogFile=FullBuild.sum /flp1:warningsonly;logfile=FullBuild.wrn /flp2:errorsonly;logfile=FullBuild.err /p:DebugTrace=$(system.debug) /p:CodeSign=false /p:AuthenticodeSign=false /p:RunGlobalReadinessTools=false /p:EnablePreBuildTarget=false /p:EnablePostBuildTarget=false'
+          msbuildArguments: '/t:RunTests /p:Scope=$(source.scope) /p:Configuration=Release /clp:ShowTimestamp /flp:Summary;Verbosity=minimal;LogFile=FullBuild.sum /flp1:warningsonly;logfile=FullBuild.wrn /flp2:errorsonly;logfile=FullBuild.err /p:DebugTrace=$(system.debug) /p:CodeSign=false /p:AuthenticodeSign=false /p:RunGlobalReadinessTools=false /p:EnablePreBuildTarget=false /p:EnablePostBuildTarget=false'
 
 
       - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
