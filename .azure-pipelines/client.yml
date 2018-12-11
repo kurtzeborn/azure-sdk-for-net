@@ -5,15 +5,8 @@ trigger:
 #  'source.scope' list of projects to build (Ex: SDKs\KeyVault\dataPlane)
 #  'build.useLatest' indicates whether or not to use build bootstrap files from the LTSBuildTools branch
 #  'sign.pattern' the pattern used to find assemblies for SN and AuthentiCode signing
-#  'system.debug' bool for debug tracing
 
 #TODO: sign.pattern needs better filtering (not KeyVault specific, exclude test assemblies).
-
-variables:
-  source.scope: 'SDKs\KeyVault\dataPlane'
-  build.useLatest: 'false'
-  sign.pattern: '*KeyVault*.dll'
-  system.debug: 'false'
 
 jobs:
   - job: 'Build_and_Test'
@@ -119,7 +112,7 @@ jobs:
           solution: build.proj
 
           #TODO: change the target to just "Package" once it's merged into the main bootstrap flow
-          msbuildArguments: '/t:CategorizeProjects,Package /p:Scope=$(source.scope) /p:Configuration=Release /flp:v=diag /flp:Summary;Verbosity=minimal;LogFile=PkgBuild.sum /flp1:warningsonly;logfile=PkgBuild.wrn /flp2:errorsonly;logfile=PkgBuild.err /p:DebugOutput=true /p:DebugTrace=$(system.debug)'
+          msbuildArguments: '/t:Package /p:Scope=$(source.scope) /p:Configuration=Release /flp:v=diag /flp:Summary;Verbosity=minimal;LogFile=PkgBuild.sum /flp1:warningsonly;logfile=PkgBuild.wrn /flp2:errorsonly;logfile=PkgBuild.err /p:DebugOutput=true /p:DebugTrace=$(system.debug)'
 
 
       - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
